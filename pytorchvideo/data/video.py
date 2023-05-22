@@ -1,7 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 from abc import ABC, abstractmethod
-from typing import BinaryIO, Dict, Optional
+from typing import BinaryIO, Dict, Optional, Any
 
 import torch
 from iopath.common.file_io import g_pathmgr
@@ -19,7 +19,13 @@ class VideoPathHandler(object):
         self.path_order_cache = {}
 
     def video_from_path(
-        self, filepath, decode_video=True, decode_audio=False, decoder="pyav", fps=30
+        self,
+        filepath,
+        decode_video=True,
+        decode_audio=False,
+        decoder="pyav",
+        fps=30,
+        **decoder_args: Dict[str, Any],
     ):
         try:
             is_file = g_pathmgr.isfile(filepath)
@@ -39,6 +45,7 @@ class VideoPathHandler(object):
                 decode_video=decode_video,
                 decode_audio=decode_audio,
                 decoder=decoder,
+                **decoder_args,
             )
         elif is_dir:
             from pytorchvideo.data.frame_video import FrameVideo

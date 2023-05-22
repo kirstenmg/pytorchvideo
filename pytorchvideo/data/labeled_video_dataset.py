@@ -35,6 +35,7 @@ class LabeledVideoDataset(torch.utils.data.IterableDataset):
         decode_audio: bool = True,
         decode_video: bool = True,
         decoder: str = "pyav",
+        **decoder_args: Dict[str, Any],
     ) -> None:
         """
         Args:
@@ -67,6 +68,7 @@ class LabeledVideoDataset(torch.utils.data.IterableDataset):
         self._clip_sampler = clip_sampler
         self._labeled_videos = labeled_video_paths
         self._decoder = decoder
+        self._decoder_args = decoder_args
 
         # If a RandomSampler is used we need to pass in a custom random generator that
         # ensures all PyTorch multiprocess workers have the same random seed.
@@ -142,6 +144,7 @@ class LabeledVideoDataset(torch.utils.data.IterableDataset):
                         decode_audio=self._decode_audio,
                         decode_video=self._decode_video,
                         decoder=self._decoder,
+                        **self._decoder_args,
                     )
                     self._loaded_video_label = (video, info_dict, video_index)
                 except Exception as e:

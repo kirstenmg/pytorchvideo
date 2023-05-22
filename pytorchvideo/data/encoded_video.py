@@ -3,6 +3,7 @@
 import io
 import logging
 import pathlib
+import cv2
 from typing import Any, Dict
 
 from iopath.common.file_io import g_pathmgr
@@ -64,6 +65,24 @@ class EncodedVideo(Video):
         # We read the file with PathManager so that we can read from remote uris.
         with g_pathmgr.open(file_path, "rb") as fh:
             video_file = io.BytesIO(fh.read())
+
+        short_side_scale = other_args.pop("short_side_scale", None)
+        if short_side_scale:
+            video_capture = cv2.VideoCapture(file_path)
+            width = video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)
+            height = video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+            if width == 0 or height == 0:
+                raise ValueError(f'Invalid video object at "{file_path}"')
+
+            if width < height:
+                height = short_side_scale * height / width
+                width = short_side_scale
+            else:
+                width = short_side_scale * width / height
+                height = short_side_scale
+            other_args["width"] = int(width)
+            other_args["height"] = int(height)
 
         video_cls = select_video_class(decoder)
         return video_cls(

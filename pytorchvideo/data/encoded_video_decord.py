@@ -4,6 +4,7 @@ import logging
 import math
 from typing import BinaryIO, Dict, Optional, TypeVar
 
+
 import torch
 
 from .utils import thwc_to_cthw
@@ -85,6 +86,7 @@ class EncodedVideoDecord(Video):
                 "install with 'pip install decord' for CPU-only version and refer to"
                 "'https://github.com/dmlc/decord' for GPU-supported version"
             )
+
         try:
             if self._decode_audio:
                 self._av_reader = decord.AVReader(
